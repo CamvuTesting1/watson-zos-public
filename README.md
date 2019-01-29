@@ -71,7 +71,7 @@ Calibri;mso-bidi-theme-font:minor-latin;mso-no-proof:yes"><!--[if gte vml 1]><v:
 </v:shapetype><v:shape id="Picture_x0020_5" o:spid="_x0000_i1031" type="#_x0000_t75"
  alt="A screenshot of a cell phone&#13;&#10;&#13;&#10;Description generated with very high confidence"
  style='width:321pt;height:179.25pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+ <v:imagedata src="file://readme_imagesclip_image001.png"
   o:title="A screenshot of a cell phone&#13;&#10;&#13;&#10;Description generated with very high confidence"/>
 </v:shape><![endif]--><img src="testHTML/clip_image002.gif"
 alt="A screenshot of a cell phone
@@ -102,7 +102,7 @@ face="Arial"><span style="mso-bidi-font-family:
 Calibri;mso-bidi-theme-font:minor-latin;mso-no-proof:yes"><!--[if gte vml 1]><v:shape
  id="Picture_x0020_2" o:spid="_x0000_i1030" type="#_x0000_t75" style='width:366.75pt;
  height:60.75pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image003.png"
+ <v:imagedata src="file://readme_imagesclip_image003.png"
   o:title=""/>
 </v:shape><![endif]--><img src="clip_image003.gif" width="489" height="81"
 v:shapes="Picture_x0020_2"></span><span style="mso-bidi-font-family:
@@ -138,7 +138,7 @@ face="Arial"><span style="mso-bidi-font-family:
 Calibri;mso-bidi-theme-font:minor-latin;mso-no-proof:yes"><!--[if gte vml 1]><v:shape
  id="Picture_x0020_1" o:spid="_x0000_i1029" type="#_x0000_t75" style='width:438.75pt;
  height:39pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image004.png"
+ <v:imagedata src="file://readme_imagesclip_image004.png"
   o:title=""/>
 </v:shape><![endif]--><img src="clip_image004.gif" width="585" height="52"
 v:shapes="Picture_x0020_1"></span><span style="mso-bidi-font-family:
@@ -167,7 +167,7 @@ face="Arial"><span style="mso-bidi-font-family:
 Calibri;mso-bidi-theme-font:minor-latin;mso-no-proof:yes"><!--[if gte vml 1]><v:shape
  id="Picture_x0020_3" o:spid="_x0000_i1028" type="#_x0000_t75" style='width:198.75pt;
  height:25.5pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image005.png"
+ <v:imagedata src="file://readme_imagesclip_image005.png"
   o:title=""/>
 </v:shape><![endif]--><img src="clip_image005.gif" width="265" height="34"
 v:shapes="Picture_x0020_3"></span><span style="mso-bidi-font-family:
@@ -196,7 +196,7 @@ face="Arial"><span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times N
 mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="mso-spacerun:yes">&nbsp;</span><span style="mso-no-proof:yes"><!--[if gte vml 1]><v:shape
  id="Picture_x0020_10" o:spid="_x0000_i1027" type="#_x0000_t75" alt="Authentication keys"
  style='width:115.5pt;height:45.75pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png"
+ <v:imagedata src="file://readme_imagesclip_image006.png"
   o:title="Authentication keys"/>
 </v:shape><![endif]--><img src="clip_image007.gif"
 alt="Authentication keys" width="154" height="61"
@@ -211,7 +211,7 @@ mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">Click <b>New SSH k
 &nbsp;&nbsp;</span><span style="mso-no-proof:yes"><!--[if gte vml 1]><v:shape id="Picture_x0020_9"
  o:spid="_x0000_i1026" type="#_x0000_t75" alt="SSH Key button" style='width:273pt;
  height:61.5pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png"
+ <v:imagedata src="file://readme_imagesclip_image008.png"
   o:title="SSH Key button"/>
 </v:shape><![endif]--><img src="clip_image009.gif" alt="SSH Key button"
 width="364" height="82" v:shapes="Picture_x0020_9"></span><o:p></o:p></span></font></p>
@@ -231,7 +231,7 @@ face="Arial"><span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times N
 mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="mso-spacerun:yes">&nbsp; </span><span style="mso-no-proof:yes"><!--[if gte vml 1]><v:shape
  id="Picture_x0020_8" o:spid="_x0000_i1025" type="#_x0000_t75" alt="The key field"
  style='width:300pt;height:209.25pt;visibility:visible;mso-wrap-style:square'>
- <v:imagedata src="file:///C:/Users/CAMVUP~1/AppData/Local/Temp/msohtmlclip1/01/clip_image010.png"
+ <v:imagedata src="file://readme_imagesclip_image010.png"
   o:title="The key field"/>
 </v:shape><![endif]--><img src="clip_image011.gif"
 alt="The key field" width="400" height="279"
