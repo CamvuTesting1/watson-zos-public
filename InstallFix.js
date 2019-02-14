@@ -43,22 +43,32 @@ function InstallUserMods(installUmodAction, callback) {
 			return Q.reject('Failed to connect to', HOST);
 		});
 
-	return SubmitInstallFix(client, JCLjob, callback);
+	return SubmitInstallFix(client, JCLjob, sysmodName, callback);
 }	// end: InstallUserMods
 
 
-function SubmitInstallFix(client, JCLjob, callback) {
+function SubmitInstallFix(client, JCLjob, sysmodName, callback) {
 
 	submitJob(client, JCLjob).then(function (result) {
 
 		console.log('SubmitInstallFix: ' + result.jobName + ' JobID...' + result.jobId);
 
-		client.getJobLog(result.jobName, result.jobId, '13')
+		client.getJobLog(result.jobName, result.jobId, 'x')
 			.then(function (jobLog) {
 				console.log('getJobLog: Job log output:' + jobLog);
+				//++++++++++++++++++
+				// var filePath = "./output/temp.txt";
+				// fs.writeFile(filePath, jobLog, function (err) {
+				// 	if (err) {
+				// 		return console.log(err);
+				// 	}
+				// 	console.log("Jog log output was saved to file temp.text.");
+				// }
+				// );
+				//+++++++++++++++++++
 				client.close();
 				console.log('<=======================CLOSE CONNECTION=========================>');
-				callback(null,parsing(jobLog));
+				callback(null,parsing(jobLog, sysmodName));
 
 			})
 	}).catch(function (err) {
@@ -114,7 +124,7 @@ function InstallFixCurrent(sysmodname) {
 	return { jobName: sysmodname + 'S', jcl: jcl };
 }
 
-function parsing(jobString) {
+function parsing(jobString,sysmodName) {
 	var linesArray = jobString.split(/\r?\n/);
 	for (var i = 0; i < linesArray.length; i++) {
 		console.log("-----" + linesArray[i]);
@@ -122,14 +132,45 @@ function parsing(jobString) {
 
 	var lineOutput = [];
 	for (var i = 0; i < linesArray.length; i++) {
-		// Case that the sysmod has been installed in the system
-		if (linesArray[i].indexOf('  TYPE            =') >= 0) {
+
+		
+		if (linesArray[i].indexOf('ABEND CODE OF 0013') >= 0) {
+			lineOutput.push('The sysmod ' + sysmodName + ' does not have an APAR/PTF file submitted in the library D55TST.ZOSR2x.LKED.K2x.');
+			lineOutput.push('Please check and provide the file.');
+		}
+
+		// Case that the sysmod has been already installed in the system
+		if (linesArray[i].indexOf('ALREADY RECEIVED') >= 0) {
+			lineOutput.push('The sysmod ' + sysmodName + ' has already been installed in this system. Here is its status:');
+			for (var j = i; j < linesArray.length; j++) {
+				if (linesArray[j].indexOf('  TYPE            =') >= 0) {
+					while (linesArray[j].indexOf('TARGET ZONE') < 0) {
+						console.log("++++++++" + linesArray[j]);
+						lineOutput.push(linesArray[j]);
+						j++;
+					}
+				}	
+			}
+		}
+		// Case that the sysmod has been installed succesfully in the system
+		// if (linesArray[i].indexOf('  TYPE            =') >= 0) {
+		// 	while (linesArray[i].indexOf('TARGET ZONE') < 0) {
+		// 		console.log("++++++++" + linesArray[i]);
+		// 		lineOutput.push(linesArray[i]);
+		// 		i++;
+		// 	}
+		// }
+		// Case that the sysmod is failed to be installed
+		if (linesArray[i].indexOf('ERROR DESCRIPTION AND POSSIBLE CAUSES') >= 0) {
+			i++;
+			lineOutput.push('Installing is not completed. Here are error description and possible causes:');
 			while (linesArray[i].indexOf('TARGET ZONE') < 0) {
 				console.log("++++++++" + linesArray[i]);
 				lineOutput.push(linesArray[i]);
 				i++;
 			}
 		}
+
 	}
 	var textResult = lineOutput.join('<br>');
 console.log('textResult:' +  textResult);

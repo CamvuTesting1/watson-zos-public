@@ -23,6 +23,7 @@ const _             = require('lodash');
  
 const queryUmodfAction  = require('./QueryUsermod.js');													  
 const installUmodAction  = require('./InstallFix.js');													  
+const IplAction  = require('./Ipl.js');													  
 const app = express();
 
 
@@ -152,6 +153,12 @@ function processActions(response, callback) {
       break;
       case 'InstallUsermod':
     installUmodAction.action(action, done);
+        break;
+      case 'Ipl':
+      // if (response.context.IPLrun=true){
+      IplAction.action(action, done);
+      // response.context.IPLrun=false;
+      //  };
         break;
       default:
         done('Unknown action name : ' + action.name);

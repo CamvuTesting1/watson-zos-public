@@ -56,7 +56,7 @@ function SubmitQueryUsermod(client, JCLjob, callback) {
 
 		console.log('SubmitQueryUsermod: ' + result.jobName + ' JobID...' + result.jobId);
 
-		client.getJobLog(result.jobName, result.jobId, '6')
+		client.getJobLog(result.jobName, result.jobId, 'x')
 			.then(function (jobLog) {
 				// console.log('getJobLog: Job log output:' + jobLog);
 				client.close();

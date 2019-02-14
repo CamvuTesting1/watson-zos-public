@@ -14,22 +14,19 @@ var path = require('path');
 var sinon = require('sinon');
 var Q = require('q');
 var Client = require('zos-node-accessor');
-var Paratree = require('paratree');
 
 var USERNAME = 'phamct'
 var PASSWD = 'phongvu2'
-// var HOST 		= 'SSGMES1.tuc.stglabs.ibm.com'
 
 var MAX_QUERIES = 100;          	// Query 10 times at most
 var QUERY_INTERVAL = 2000;     	// 2 seconds
 var client = new Client();
 
-function InstallUserMods(installUmodAction, callback) {
-	var sysmodName = installUmodAction.parameters.usermodName;
-	var HOST = installUmodAction.parameters.systemIP;
-	var _client;
-	var JCLjob = InstallFixCurrent(sysmodName);
-	console.log(sysmodName + '++++++++++++++++++++++++++++++++++++++++++++++++++++');
+function IplNativeSys(IplAction, callback) {
+	var sysToIpl = IplAction.parameters.targetSysName;
+	var HOST = IplAction.parameters.systemIP;
+	var JCLjob = IplCurrent(sysToIpl);
+	console.log(sysToIpl + '++++++++++++++++++++++++++++++++++++++++++++++++++++');
 	console.log(HOST + '+++++++++++++++++++++++++++++++++++++++++++++');
 	client.connect({ user: USERNAME, password: PASSWD, host: HOST })
 		.then(function (client) {
@@ -43,17 +40,17 @@ function InstallUserMods(installUmodAction, callback) {
 			return Q.reject('Failed to connect to', HOST);
 		});
 
-	return SubmitInstallFix(client, JCLjob, callback);
-}	// end: InstallUserMods
+	return SubmitIplJob(client, JCLjob, callback);
+}	// end: IplNativeSys
 
 
-function SubmitInstallFix(client, JCLjob, callback) {
+function SubmitIplJob(client, JCLjob, callback) {
 
 	submitJob(client, JCLjob).then(function (result) {
 
-		console.log('SubmitInstallFix: ' + result.jobName + ' JobID...' + result.jobId);
+		console.log('SubmitIplJob: ' + result.jobName + ' JobID...' + result.jobId);
 
-		client.getJobLog(result.jobName, result.jobId, '13')
+		client.getJobLog(result.jobName, result.jobId, 'x')
 			.then(function (jobLog) {
 				console.log('getJobLog: Job log output:' + jobLog);
 				client.close();
@@ -62,7 +59,7 @@ function SubmitInstallFix(client, JCLjob, callback) {
 
 			})
 	}).catch(function (err) {
-		console.log('InstallUserModsa(installUmodAction): returned an error');
+		console.log('IplNativeSysa(IplAction): returned an error');
 		console.dir(error);
 		callback(JSON.stringify(error.jobLog));
 	});
@@ -106,12 +103,12 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 		});
 }
 
-function InstallFixCurrent(sysmodname) {
-	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/INSTALL.jcl'), 'utf8');
-	jcl = jcl.replace('__INSTASYMOD__', sysmodname + 'S');
-	jcl = jcl.replace('__SYSMODNAME__', sysmodname);
-	jcl = jcl.replace('__INSTACOMMENT__', sysmodname + 'S');
-	return { jobName: sysmodname + 'S', jcl: jcl };
+function IplCurrent(sysToIpl) {
+	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/AUTOIPL.jcl'), 'utf8');
+	jcl = jcl.replace('__VOLSERTYPE__', 'ACT');
+	jcl = jcl.replace('__FORCEBOOLEAN__', 'Y');
+	jcl = jcl.replace('__SYSTEMNAME__', sysToIpl);
+	return { jobName: 'AUTOIPLW', jcl: jcl };
 }
 
 function parsing(jobString) {
@@ -120,22 +117,19 @@ function parsing(jobString) {
 		console.log("-----" + linesArray[i]);
 	}
 
-	var lineOutput = [];
+	// var lineOutput = [];
+	var textResult ='';
 	for (var i = 0; i < linesArray.length; i++) {
 		// Case that the sysmod has been installed in the system
-		if (linesArray[i].indexOf('  TYPE            =') >= 0) {
-			while (linesArray[i].indexOf('TARGET ZONE') < 0) {
-				console.log("++++++++" + linesArray[i]);
-				lineOutput.push(linesArray[i]);
-				i++;
-			}
+		if (linesArray[i].indexOf('AUTOIPLW ENDED') >= 0) {
+			textResult=linesArray[i];
 		}
 	}
-	var textResult = lineOutput.join('<br>');
+	// var textResult = lineOutput.join('<br>');
 console.log('textResult:' +  textResult);
 	return textResult;
 }
 
 module.exports = {
-	action: InstallUserMods
+	action: IplNativeSys
 }
