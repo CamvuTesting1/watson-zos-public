@@ -39,7 +39,7 @@ for (var i = 0; i < linesArray.length; i++) {
   }
   // Case that the sysmod is failed to be installed
   if (linesArray[i].indexOf('ERROR DESCRIPTION AND POSSIBLE CAUSES') >= 0) {
-    i++;
+    i++;screen
     lineOutput.push('Installing is not completed. Here are error description and possible causes:');
     while (linesArray[i].indexOf('TARGET ZONE') < 0) {
       console.log("++++++++" + linesArray[i]);

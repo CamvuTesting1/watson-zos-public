@@ -104,7 +104,7 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 			console.log(jobId, rc);		// JOBxxxxx Success or Failing
 			if (rc === Client.RC_SUCCESS || rc === Client.RC_FAIL) {
 				if (rc == Client.RC_SUCCESS) {
-					consol=e.log('pollJCLJobStatus->RC:' + rc);
+					console.log('pollJCLJobStatus->RC:' + rc);
 				}
 				deferred.resolve({ jobName: jobName, jobId: jobId, rc: rc });
 

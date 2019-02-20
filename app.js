@@ -24,6 +24,8 @@ const _             = require('lodash');
 const queryUmodfAction  = require('./QueryUsermod.js');													  
 const installUmodAction  = require('./InstallFix.js');													  
 const IplAction  = require('./Ipl.js');													  
+const DalAction  = require('./Dal.js');													  
+const DIPLinfoAction  = require('./DIplinfo.js');													  
 const app = express();
 
 
@@ -154,8 +156,13 @@ function processActions(response, callback) {
       case 'InstallUsermod':
     installUmodAction.action(action, done);
         break;
+    //   case 'Status1':
+    // DalAction.action(action, done);
+    //     break;
       case 'Ipl':
       // if (response.context.IPLrun=true){
+      DalAction.action(action, done);
+      DIPLinfoAction.action(action, done);
       IplAction.action(action, done);
       // response.context.IPLrun=false;
       //  };
