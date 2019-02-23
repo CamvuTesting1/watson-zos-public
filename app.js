@@ -15,17 +15,17 @@
  */
 
 'use strict';
-const express       = require('express');
-const AssistantV1   = require('watson-developer-cloud/assistant/v1');
-const bodyParser    = require('body-parser');
-const async         = require('async');
-const _             = require('lodash');
- 
-const queryUmodfAction  = require('./QueryUsermod.js');													  
-const installUmodAction  = require('./InstallFix.js');													  
-const IplAction  = require('./Ipl.js');													  
-const DalAction  = require('./Dal.js');													  
-const DIPLinfoAction  = require('./DIplinfo.js');													  
+const express = require('express');
+const AssistantV1 = require('watson-developer-cloud/assistant/v1');
+const bodyParser = require('body-parser');
+const async = require('async');
+const _ = require('lodash');
+
+const queryUmodfAction = require('./QueryUsermod.js');
+const installUmodAction = require('./InstallFix.js');
+const IplAction = require('./Ipl.js');
+const DalAction = require('./Dal.js');
+const DIPLinfoAction = require('./DIplinfo.js');
 const app = express();
 
 
@@ -34,16 +34,16 @@ app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
 //Create the service wrapper
 var assistant = new AssistantV1({
-	version: '2018-07-10'
+  version: '2018-07-10'
 });
 
 // credentials for cloud action
-const actionUsername = process.env.ACTION_USERNAME|| null;
+const actionUsername = process.env.ACTION_USERNAME || null;
 const actionPassword = process.env.ACTION_PASSWORD || null;
 
 // switch to use client or cloud actions: Use Client Action
 let useClientActions = process.env.USE_CLIENT_ACTIONS || false;
-if(useClientActions === "true") {
+if (useClientActions === "true") {
   console.log('Using client actions');
   useClientActions = true;
 } else {
@@ -73,12 +73,12 @@ app.post('/api/message', (req, res) => {
     console.log('Warning: variables ACTION_USERNAME and ACTION_PASSWORD are not set, Cloud actions will not work');
   }
   */
- 
+
   var payload = {
     workspace_id: workspace,
     context: req.body.context || {},
     input: req.body.input || {},
-    nodes_visited_details : true
+    nodes_visited_details: true
   };
   // add credentials
   //if(actionCredentials) {
@@ -114,15 +114,15 @@ function callAssistant(payload, res, skipActions, actionPayloads) {
           if (err) {
             return res.status(err.code || 500).json(err);
           }
-		  // return data to assistant, skip any further actions
+          // return data to assistant, skip any further actions
           var newPayload = {
-            workspace_id : payload.workspace_id,
-			context : response.context,
-			output  : response.output,
-            input : {},
-            nodes_visited_details : true
-		  };
-          return callAssistant(newPayload, res, true, {userActionResultPayload: newPayload, watsonInitial: data});
+            workspace_id: payload.workspace_id,
+            context: response.context,
+            output: response.output,
+            input: {},
+            nodes_visited_details: true
+          };
+          return callAssistant(newPayload, res, true, { userActionResultPayload: newPayload, watsonInitial: data });
         });
       } else {
         // here you can remove response.context.private.actionCredentials to avoid the credentials leaking to the client
@@ -149,23 +149,26 @@ function processActions(response, callback) {
   console.log("Action configuration:");
   console.dir(actions);
   async.map(actions, (action, done) => {
-    switch(action.name) {
+    switch (action.name) {
       case 'QueryPTFUsermod':
-    queryUmodfAction.action(action, done);
-      break;
-      case 'InstallUsermod':
-    installUmodAction.action(action, done);
+        queryUmodfAction.action(action, done);
         break;
-    //   case 'Status1':
-    // DalAction.action(action, done);
-    //     break;
+      case 'InstallUsermod':
+        installUmodAction.action(action, done);
+        break;
+      case 'Dal':
+        DalAction.action(action, done);
+        break;
+      case 'Diplinfo':
+        DIPLinfoAction.action(action, done);
+        break;
       case 'Ipl':
-      // if (response.context.IPLrun=true){
-      DalAction.action(action, done);
-      DIPLinfoAction.action(action, done);
-      IplAction.action(action, done);
-      // response.context.IPLrun=false;
-      //  };
+        // if (response.context.IPLrun=true){
+        // DalAction.action(action, done);
+        // DIPLinfoAction.action(action, done);
+        IplAction.action(action, done);
+        // response.context.IPLrun=false;
+        //  };
         break;
       default:
         done('Unknown action name : ' + action.name);
@@ -176,18 +179,17 @@ function processActions(response, callback) {
       return callback(err, response);
     }
 
-	// copy results to context variables
-	console.log("...........Returning new response to Watson Assistant...........");
-	//console.dir(response);
-	let newResponse = _.cloneDeep(response);
-    for(let i = 0; i < actions.length; i++) {
+    // copy results to context variables
+    console.log("...........Returning new response to Watson Assistant...........");
+    //console.dir(response);
+    let newResponse = _.cloneDeep(response);
+    for (let i = 0; i < actions.length; i++) {
       newResponse.context[actions[i].result_variable] = results[i];
-	}
-	//newResponse.context.skip_user_input = true;
+    }
+    //newResponse.context.skip_user_input = true;
     callback(null, newResponse);
   });
 }
 
 module.exports = app;
 
- 
