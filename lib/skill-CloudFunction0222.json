@@ -1124,22 +1124,43 @@
       "dialog_node": "node_5_1546882418219"
     },
     {
-      "type": "standard",
+      "type": "response_condition",
       "output": {
         "text": {
           "values": [
-            "D A,L: $DalOutput"
+            "The IPLing process for native system $TargetSystemName has been started from system $HostSystemName at $SystemIP."
           ],
-          "selection_policy": "sequential"
+          "selection_policy": "random"
         }
       },
       "parent": "node_1_1550106345867",
-      "metadata": {},
-      "next_step": {
-        "behavior": "skip_user_input"
+      "actions": [
+        {
+          "name": "Ipl",
+          "type": "client",
+          "parameters": {
+            "systemIP": "$SystemIP",
+            "targetSysName": "$TargetSystemName"
+          },
+          "result_variable": "JoblogOutput"
+        }
+      ],
+      "context": {
+        "MESnum": "<? input.text.extract('[1-9]', 0) ?>",
+        "mycreds": {
+          "user": "6dc48aeb-ca3f-41c8-9417-b8d956fa2457",
+          "password": "2DpyriN8oSsOqYJQOf1bpMkbg4v0Kxq27aikhyb7QHSPVCnrehV8savr4IkesXU0"
+        },
+        "SystemIP": "SSGMES1.tuc.stglabs.ibm.com",
+        "JoblogOutput": "",
+        "HostSystemName": "MES01",
+        "skip_user_input": true,
+        "TargetSystemName": "$SysNamePrefix$MESnum",
+        "useClientActions": true
       },
-      "conditions": "$DalOutput",
-      "dialog_node": "node_1_1550911892091",
+      "metadata": {},
+      "conditions": "@mes:MES02 || @mes:MES03 || @mes:MES05 || @mes:MES09",
+      "dialog_node": "node_3_1550106374105",
       "previous_sibling": "node_3_1550697182514"
     },
     {
@@ -1245,43 +1266,22 @@
       "previous_sibling": "node_5_1550106391372"
     },
     {
-      "type": "response_condition",
+      "type": "standard",
       "output": {
         "text": {
           "values": [
-            "The IPLing process for native system $TargetSystemName has been started from system $HostSystemName at $SystemIP."
+            "AUTOIPL job has been invoked. Here is the result message from the system:<br>$AutoIplOutput"
           ],
-          "selection_policy": "random"
+          "selection_policy": "sequential"
         }
       },
       "parent": "node_1_1550106345867",
-      "actions": [
-        {
-          "name": "Ipl",
-          "type": "client",
-          "parameters": {
-            "systemIP": "$SystemIP",
-            "targetSysName": "$TargetSystemName"
-          },
-          "result_variable": "JoblogOutput"
-        }
-      ],
-      "context": {
-        "MESnum": "<? input.text.extract('[1-9]', 0) ?>",
-        "mycreds": {
-          "user": "6dc48aeb-ca3f-41c8-9417-b8d956fa2457",
-          "password": "2DpyriN8oSsOqYJQOf1bpMkbg4v0Kxq27aikhyb7QHSPVCnrehV8savr4IkesXU0"
-        },
-        "SystemIP": "SSGMES1.tuc.stglabs.ibm.com",
-        "JoblogOutput": "",
-        "HostSystemName": "MES01",
-        "skip_user_input": true,
-        "TargetSystemName": "$SysNamePrefix$MESnum",
-        "useClientActions": true
-      },
       "metadata": {},
-      "conditions": "@mes:MES02 || @mes:MES03 || @mes:MES05 || @mes:MES09",
-      "dialog_node": "node_3_1550106374105",
+      "next_step": {
+        "behavior": "skip_user_input"
+      },
+      "conditions": "$AutoIplOutput",
+      "dialog_node": "node_3_1550697182514",
       "previous_sibling": "node_1_1550696277150"
     },
     {
@@ -1329,7 +1329,7 @@
       "output": {
         "text": {
           "values": [
-            "AUTOIPL job has been invoked. Here is the result message from the system:<br>$AutoIplOutput"
+            "D A,L: $DalOutput"
           ],
           "selection_policy": "sequential"
         }
@@ -1339,8 +1339,8 @@
       "next_step": {
         "behavior": "skip_user_input"
       },
-      "conditions": "$AutoIplOutput",
-      "dialog_node": "node_3_1550697182514"
+      "conditions": "$DalOutput",
+      "dialog_node": "node_1_1550911892091"
     },
     {
       "type": "event_handler",
