@@ -1280,7 +1280,7 @@
       "next_step": {
         "behavior": "skip_user_input"
       },
-      "conditions": "$AutoIplOutput",
+      "conditions": "$TargetSystemName",
       "dialog_node": "node_3_1550697182514",
       "previous_sibling": "node_1_1550696277150"
     },
