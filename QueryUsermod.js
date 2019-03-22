@@ -111,7 +111,7 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 
 function QrySysmodCurrent(sysmodname) {
 	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/QRYSYMOD1.jcl'), 'utf8');
-	jcl = jcl.replace('__QRYSYMOD__', sysmodname + 'Q');
+	jcl = jcl.replaceAll('__QRYSYMOD__', sysmodname + 'Q');
 	jcl = jcl.replace('__MSGCLASS__', 'H');
 	jcl = jcl.replace('__SYSMODNAME__', sysmodname);
 	return { jobName: sysmodname + 'Q', jcl: jcl };

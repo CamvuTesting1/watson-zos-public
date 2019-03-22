@@ -134,7 +134,7 @@ function parsing(jobString,sysmodName) {
 	for (var i = 0; i < linesArray.length; i++) {
 
 		
-		if (linesArray[i].indexOf('ABEND CODE OF 0013') >= 0) {
+		if (linesArray[i].indexOf(sysmodName + 'S ENDED - ABEND=S013') >= 0) {
 			lineOutput.push('The sysmod ' + sysmodName + ' does not have an APAR/PTF file submitted in the library D55TST.ZOSR2x.LKED.K2x.');
 			lineOutput.push('Please check and provide the file.');
 		}
