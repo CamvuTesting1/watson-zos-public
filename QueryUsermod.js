@@ -28,7 +28,7 @@ var client = new Client();
 
 // call QueryUmod action, call done with (error, result data)
 function QueryUserMods(queryUmodfAction, callback) {
-	var sysmodName = queryUmodfAction.parameters.usermodName;
+	var sysmodName = queryUmodfAction.parameters.usermodName.toUpperCase();
 	var HOST = queryUmodfAction.parameters.systemIP;
 	var _client;
 	var JCLjob = QrySysmodCurrent(sysmodName);
@@ -110,17 +110,33 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 }
 
 function QrySysmodCurrent(sysmodname) {
-	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/QRYSYMOD1.jcl'), 'utf8');
-	jcl = jcl.replaceAll('__QRYSYMOD__', sysmodname + 'Q');
-	jcl = jcl.replace('__MSGCLASS__', 'H');
-	jcl = jcl.replace('__SYSMODNAME__', sysmodname);
-	return { jobName: sysmodname + 'Q', jcl: jcl };
+
+	if ((sysmodname.substring(0, 1) == 'A') ||
+		(sysmodname.substring(0, 1) == 'B') ||
+		(sysmodname.substring(0, 1) == 'C') ||
+		(sysmodname.substring(0, 1) == 'D') ||
+		(sysmodname.substring(0, 1) == 'E') ||
+		(sysmodname.substring(0, 1) == 'U')) {
+		var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/QRYSYMOD1.jcl'), 'utf8');
+		jcl = jcl.replace('__QRYSYMOD__', sysmodname + 'Q');
+		jcl = jcl.replace('__MSGCLASS__', 'H');
+		jcl = jcl.replace('__SYSMODNAME__', sysmodname);
+		return { jobName: sysmodname + 'Q', jcl: jcl };
+	}
+	else {
+		var sysmodnum = sysmodname.substring(2);
+		var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/LISTAPAR.jcl'), 'utf8');
+		jcl = jcl.replace(/__SYSMODNUM__/g, sysmodnum);
+		jcl = jcl.replace(/__PREFIX2__/g, sysmodname.substring(1, 1));
+		return { jobName: 'LISTAPAR', jcl: jcl };
+	}
+
 }
 
 function parsing(jobString) {
 	var linesArray = jobString.split(/\r?\n/);
 	for (var i = 0; i < linesArray.length; i++) {
-		console.log("-----" + linesArray[i]);
+		console.log("Inside parsing step ----- " + linesArray[i]);
 	}
 
 	var lineOutput = [];
@@ -128,14 +144,24 @@ function parsing(jobString) {
 		// Case that the sysmod has been installed in the system
 		if (linesArray[i].indexOf('TYPE            =') >= 0) {
 			while (linesArray[i].indexOf('NOW SET TO GLOBAL ZONE') < 0) {
-				console.log("++++++++" + linesArray[i]);
+				console.log("Pushed to output ++++++++ " + linesArray[i]);
 				lineOutput.push(linesArray[i]);
 				i++;
 			}
 		}
+
+		// Case that we list the sysmods' status in the system
+		if (linesArray[i].indexOf('List result of usermods/APARs:') >= 0) {
+			while (linesArray[i].indexOf('End of result list of usermods/APARs') < 0) {
+				console.log("Pushed to output ++++++++ " + linesArray[i]);
+				lineOutput.push(linesArray[i]);
+				i++;
+			}
+		}
+
 		// Case that the sysmod has not been installed in the system
 		if (linesArray[i].indexOf('NOT FOUND') >= 0) {
-			console.log("++++++++" + linesArray[i]);
+			console.log("Pushed to output ++++++++ " + linesArray[i]);
 			lineOutput.push(linesArray[i]);
 		}
 

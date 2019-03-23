@@ -25,7 +25,7 @@ var QUERY_INTERVAL = 2000;     	// 2 seconds
 var client = new Client();
 
 function InstallUserMods(installUmodAction, callback) {
-	var sysmodName = installUmodAction.parameters.usermodName;
+	var sysmodName = installUmodAction.parameters.usermodName.toUpperCase();
 	var HOST = installUmodAction.parameters.systemIP;
 	var _client;
 	var JCLjob = InstallFixCurrent(sysmodName);

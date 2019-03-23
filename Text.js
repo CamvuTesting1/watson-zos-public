@@ -174,3 +174,10 @@ function printResult() {
   console.log("++++" +lineOutput[i]);}
   // return resultText;
 }
+
+
+var sysmodname = 'OA12345';
+if (sysmodname.substring(0,1)!=='A') {console.log('Doc duoc roi ne '+sysmodname.substring(0,1));}
+console.log(sysmodname.substring(2));
+var string1 ='      LIST SYSMOD(\nAA_num_\nBA_num_\nCA_num_\nDA_num_\nEA_num_';                                                         
+console.log(string1.replace(/_num_/g,'xxxxx'));
