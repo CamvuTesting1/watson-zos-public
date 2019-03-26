@@ -20,11 +20,11 @@
 //SMPCNTL  DD *,SYMBOLS=EXECSYS                                                 
   SET  BOUNDARY (&SYSR1.T).                                                     
       LIST SYSMOD(                                                              
-                AA57075                                                         
-                BA57075                                                         
-                CA57075                                                         
-                DA57075                                                         
-                EA57075                                                         
+                AA__SYSMODNUM__                                                         
+                BA__SYSMODNUM__                                                         
+                CA__SYSMODNUM__                                                         
+                DA__SYSMODNUM__                                                        
+                EA__SYSMODNUM__                                                        
                  ).                                                             
 /*                                                                              
 //*                                                                             

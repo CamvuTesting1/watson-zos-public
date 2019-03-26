@@ -127,7 +127,7 @@ function QrySysmodCurrent(sysmodname) {
 		var sysmodnum = sysmodname.substring(2);
 		var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/LISTAPAR.jcl'), 'utf8');
 		jcl = jcl.replace(/__SYSMODNUM__/g, sysmodnum);
-		jcl = jcl.replace(/__PREFIX2__/g, sysmodname.substring(1, 1));
+		// jcl = jcl.replace(/__PREFIX2__/g, sysmodname.substring(1, 1)+'');
 		return { jobName: 'LISTAPAR', jcl: jcl };
 	}
 
