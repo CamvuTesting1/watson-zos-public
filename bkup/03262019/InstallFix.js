@@ -27,9 +27,8 @@ var client = new Client();
 function InstallUserMods(installUmodAction, callback) {
 	var sysmodName = installUmodAction.parameters.usermodName.toUpperCase();
 	var HOST = installUmodAction.parameters.systemIP;
-	var rnum = parsingReleaseNumber(HOST);
 	var _client;
-	var JCLjob = InstallFixCurrent(sysmodName, rnum);
+	var JCLjob = InstallFixCurrent(sysmodName);
 	console.log(sysmodName + '++++++++++++++++++++++++++++++++++++++++++++++++++++');
 	console.log(HOST + '+++++++++++++++++++++++++++++++++++++++++++++');
 	client.connect({ user: USERNAME, password: PASSWD, host: HOST })
@@ -69,7 +68,7 @@ function SubmitInstallFix(client, JCLjob, sysmodName, callback) {
 				//+++++++++++++++++++
 				client.close();
 				console.log('<=======================CLOSE CONNECTION=========================>');
-				callback(null, parsing(jobLog, sysmodName));
+				callback(null,parsing(jobLog, sysmodName));
 
 			})
 	}).catch(function (err) {
@@ -117,39 +116,15 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 		});
 }
 
-function InstallFixCurrent(sysmodname, rnum) {
+function InstallFixCurrent(sysmodname) {
 	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/INSTALL.jcl'), 'utf8');
 	jcl = jcl.replace('__INSTASYMOD__', sysmodname + 'S');
 	jcl = jcl.replace('__SYSMODNAME__', sysmodname);
-	jcl = jcl.replace(/_RNUM_/g, rnum);
 	jcl = jcl.replace('__INSTACOMMENT__', sysmodname + 'S');
 	return { jobName: sysmodname + 'S', jcl: jcl };
 }
 
-function parsingReleaseNumber(host) {
-	var rnum = '';
-	switch (true) {
-		case host.indexOf('1') >= 0: rnum = '2';
-			break;
-		case host.indexOf('2') >= 0: rnum = '1';
-			break;
-		case host.indexOf('3') >= 0: rnum = '3';
-			break;
-		case host.indexOf('4') >= 0: rnum = '4';
-			break;
-		case host.indexOf('5') >= 0: rnum = '4';
-			break;
-		case host.indexOf('6') >= 0: rnum = '2';
-			break;
-		case host.indexOf('9') >= 0: rnum = '1';
-			break;
-		default: rnum = '2';
-
-	}
-	return rnum;
-}
-
-function parsing(jobString, sysmodName) {
+function parsing(jobString,sysmodName) {
 	var linesArray = jobString.split(/\r?\n/);
 	for (var i = 0; i < linesArray.length; i++) {
 		console.log("-----" + linesArray[i]);
@@ -158,7 +133,7 @@ function parsing(jobString, sysmodName) {
 	var lineOutput = [];
 	for (var i = 0; i < linesArray.length; i++) {
 
-
+		
 		if (linesArray[i].indexOf(sysmodName + 'S ENDED - ABEND=S013') >= 0) {
 			lineOutput.push('The sysmod ' + sysmodName + ' does not have an APAR/PTF file submitted in the library D55TST.ZOSR2x.LKED.K2x.');
 			lineOutput.push('Please check and provide the file.');
@@ -174,25 +149,17 @@ function parsing(jobString, sysmodName) {
 						lineOutput.push(linesArray[j]);
 						j++;
 					}
-				}
+				}	
 			}
 		}
-
 		// Case that the sysmod has been installed succesfully in the system
-		if (linesArray[i].indexOf('ENDED - RC=0000') >= 0) {
-			lineOutput.push(sysmodName+ ' has been installed successfully. Here is its status:');
-			for (var j = i; j < linesArray.length; j++) {
-
-				if (linesArray[j].indexOf('  TYPE            =') >= 0) {
-					while (linesArray[j].indexOf('TARGET ZONE') < 0) {
-						console.log("++++++++" + linesArray[j]);
-						lineOutput.push(linesArray[j]);
-						j++;
-					}
-				}
-			}
-		}
-
+		// if (linesArray[i].indexOf('  TYPE            =') >= 0) {
+		// 	while (linesArray[i].indexOf('TARGET ZONE') < 0) {
+		// 		console.log("++++++++" + linesArray[i]);
+		// 		lineOutput.push(linesArray[i]);
+		// 		i++;
+		// 	}
+		// }
 		// Case that the sysmod is failed to be installed
 		if (linesArray[i].indexOf('ERROR DESCRIPTION AND POSSIBLE CAUSES') >= 0) {
 			i++;
@@ -206,7 +173,7 @@ function parsing(jobString, sysmodName) {
 
 	}
 	var textResult = lineOutput.join('<br>');
-	console.log('textResult:' + textResult);
+console.log('textResult:' +  textResult);
 	return textResult;
 }
 

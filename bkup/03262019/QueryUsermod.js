@@ -14,20 +14,25 @@ var path = require('path');
 var sinon = require('sinon');
 var Q = require('q');
 var Client = require('zos-node-accessor');
+var Paratree = require('paratree');
 
 var USERNAME = 'phamct'
 var PASSWD = 'phongvu2'
+// var HOST 		= 'SSGMES2.tuc.stglabs.ibm.com'
 
-var MAX_QUERIES = 1;          	// Query 100 times at most
-// var QUERY_INTERVAL = 2000;     	// 2 seconds
-var QUERY_INTERVAL = 36000000;     	// 15 minutes
+var MAX_QUERIES = 10;          	// Query 10 times at most
+var QUERY_INTERVAL = 2000;     	// 2 seconds
 var client = new Client();
 
-function IplNativeSys(IplAction, callback) {
-	var sysToIpl = IplAction.parameters.targetSysName;
-	var HOST = IplAction.parameters.systemIP;
-	var JCLjob = IplCurrent(sysToIpl);
-	console.log(sysToIpl + '++++++++++++++++++++++++++++++++++++++++++++++++++++');
+// QueryUserMods("UA97849");
+
+// call QueryUmod action, call done with (error, result data)
+function QueryUserMods(queryUmodfAction, callback) {
+	var sysmodName = queryUmodfAction.parameters.usermodName.toUpperCase();
+	var HOST = queryUmodfAction.parameters.systemIP;
+	var _client;
+	var JCLjob = QrySysmodCurrent(sysmodName);
+	console.log(sysmodName + '++++++++++++++++++++++++++++++++++++++++++++++++++++');
 	console.log(HOST + '+++++++++++++++++++++++++++++++++++++++++++++');
 	client.connect({ user: USERNAME, password: PASSWD, host: HOST })
 		.then(function (client) {
@@ -41,26 +46,26 @@ function IplNativeSys(IplAction, callback) {
 			return Q.reject('Failed to connect to', HOST);
 		});
 
-	return SubmitIplJob(client, JCLjob, callback);
-}	// end: IplNativeSys
+	return SubmitQueryUsermod(client, JCLjob, callback);
+}	// end: QueryUserMods
 
 
-function SubmitIplJob(client, JCLjob, callback) {
+function SubmitQueryUsermod(client, JCLjob, callback) {
 
 	submitJob(client, JCLjob).then(function (result) {
 
-		console.log('SubmitIplJob: ' + result.jobName + ' JobID...' + result.jobId);
+		console.log('SubmitQueryUsermod: ' + result.jobName + ' JobID...' + result.jobId);
 
 		client.getJobLog(result.jobName, result.jobId, 'x')
 			.then(function (jobLog) {
-				console.log('getJobLog: Job log output:' + jobLog);
+				// console.log('getJobLog: Job log output:' + jobLog);
 				client.close();
 				console.log('<=======================CLOSE CONNECTION=========================>');
 				callback(null, parsing(jobLog));
 
 			})
 	}).catch(function (err) {
-		console.log('IplNativeSysa(IplAction): returned an error');
+		console.log('QueryUserModsa(queryUmodfAction): returned an error');
 		console.dir(error);
 		callback(JSON.stringify(error.jobLog));
 	});
@@ -104,33 +109,68 @@ function pollJCLJobStatus(deferred, client, jobName, jobId, timeOutCount) {
 		});
 }
 
-function IplCurrent(sysToIpl) {
-	var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/AUTOIPL.jcl'), 'utf8');
-	jcl = jcl.replace('__VOLSERTYPE__', 'ACT');
-	jcl = jcl.replace('__FORCEBOOLEAN__', 'Y');
-	jcl = jcl.replace('__SYSTEMNAME__', sysToIpl);
-	return { jobName: 'AUTOIPLW', jcl: jcl };
+function QrySysmodCurrent(sysmodname) {
+
+	if ((sysmodname.substring(0, 1) == 'A') ||
+		(sysmodname.substring(0, 1) == 'B') ||
+		(sysmodname.substring(0, 1) == 'C') ||
+		(sysmodname.substring(0, 1) == 'D') ||
+		(sysmodname.substring(0, 1) == 'E') ||
+		(sysmodname.substring(0, 1) == 'U')) {
+		var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/QRYSYMOD1.jcl'), 'utf8');
+		jcl = jcl.replace('__QRYSYMOD__', sysmodname + 'Q');
+		jcl = jcl.replace('__MSGCLASS__', 'H');
+		jcl = jcl.replace('__SYSMODNAME__', sysmodname);
+		return { jobName: sysmodname + 'Q', jcl: jcl };
+	}
+	else {
+		var sysmodnum = sysmodname.substring(2);
+		var jcl = fs.readFileSync(path.join(__dirname, '/lib/JCL/LISTAPAR.jcl'), 'utf8');
+		jcl = jcl.replace(/__SYSMODNUM__/g, sysmodnum);
+		// jcl = jcl.replace(/__PREFIX2__/g, sysmodname.substring(1, 1)+'');
+		return { jobName: 'LISTAPAR', jcl: jcl };
+	}
+
 }
 
 function parsing(jobString) {
 	var linesArray = jobString.split(/\r?\n/);
 	for (var i = 0; i < linesArray.length; i++) {
-		console.log("-----" + linesArray[i]);
+		console.log("Inside parsing step ----- " + linesArray[i]);
 	}
 
-	// var lineOutput = [];
-	var textResult = 'end';
+	var lineOutput = [];
 	for (var i = 0; i < linesArray.length; i++) {
 		// Case that the sysmod has been installed in the system
-		if (linesArray[i].indexOf('AUTOIPLW ENDED') >= 0) {
-			textResult = linesArray[i];
+		if (linesArray[i].indexOf('TYPE            =') >= 0) {
+			while (linesArray[i].indexOf('NOW SET TO GLOBAL ZONE') < 0) {
+				console.log("Pushed to output ++++++++ " + linesArray[i]);
+				lineOutput.push(linesArray[i]);
+				i++;
+			}
 		}
+
+		// Case that we list the sysmods' status in the system
+		if (linesArray[i].indexOf('List result of usermods/APARs:') >= 0) {
+			while (linesArray[i].indexOf('End of result list of usermods/APARs') < 0) {
+				console.log("Pushed to output ++++++++ " + linesArray[i]);
+				lineOutput.push(linesArray[i]);
+				i++;
+			}
+		}
+
+		// Case that the sysmod has not been installed in the system
+		if (linesArray[i].indexOf('NOT FOUND') >= 0) {
+			console.log("Pushed to output ++++++++ " + linesArray[i]);
+			lineOutput.push(linesArray[i]);
+		}
+
 	}
-	// var textResult = lineOutput.join('<br>');
-	console.log('textResult:' + textResult);
+	var textResult = lineOutput.join('<br>');
+
 	return textResult;
 }
 
 module.exports = {
-	action: IplNativeSys
+	action: QueryUserMods
 }

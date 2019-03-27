@@ -18,9 +18,8 @@ var Client = require('zos-node-accessor');
 var USERNAME = 'phamct'
 var PASSWD = 'phongvu2'
 
-var MAX_QUERIES = 1;          	// Query 100 times at most
-// var QUERY_INTERVAL = 2000;     	// 2 seconds
-var QUERY_INTERVAL = 36000000;     	// 15 minutes
+var MAX_QUERIES = 100;          	// Query 10 times at most
+var QUERY_INTERVAL = 2000;     	// 2 seconds
 var client = new Client();
 
 function IplNativeSys(IplAction, callback) {
@@ -56,7 +55,7 @@ function SubmitIplJob(client, JCLjob, callback) {
 				console.log('getJobLog: Job log output:' + jobLog);
 				client.close();
 				console.log('<=======================CLOSE CONNECTION=========================>');
-				callback(null, parsing(jobLog));
+				callback(null,parsing(jobLog));
 
 			})
 	}).catch(function (err) {
@@ -119,15 +118,15 @@ function parsing(jobString) {
 	}
 
 	// var lineOutput = [];
-	var textResult = 'end';
+	var textResult ='';
 	for (var i = 0; i < linesArray.length; i++) {
 		// Case that the sysmod has been installed in the system
 		if (linesArray[i].indexOf('AUTOIPLW ENDED') >= 0) {
-			textResult = linesArray[i];
+			textResult=linesArray[i];
 		}
 	}
 	// var textResult = lineOutput.join('<br>');
-	console.log('textResult:' + textResult);
+console.log('textResult:' +  textResult);
 	return textResult;
 }
 

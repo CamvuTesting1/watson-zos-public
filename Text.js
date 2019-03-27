@@ -181,3 +181,29 @@ if (sysmodname.substring(0,1)!=='A') {console.log('Doc duoc roi ne '+sysmodname.
 console.log(sysmodname.substring(2));
 var string1 ='      LIST SYSMOD(\nAA_num_\nBA_num_\nCA_num_\nDA_num_\nEA_num_';                                                         
 console.log(string1.replace(/_num_/g,'xxxxx'));
+
+var host = 'SSGMES4.tuc.stglabs.ibm.com';
+console.log('Release number: '+parsingReleaseNumber(host));
+
+function parsingReleaseNumber(host){
+  var rnum='';
+switch(true){
+	case host.indexOf('1')>=0:rnum='2';
+	break;
+	case host.indexOf('2')>=0:rnum='1';
+	break;
+	case host.indexOf('3')>=0:rnum='3';
+	break;
+	case host.indexOf('4')>=0:rnum='4';
+	break;
+	case host.indexOf('5')>=0:rnum='4';
+	break;
+	case host.indexOf('6')>=0:rnum='2';
+	break;
+	case host.indexOf('9')>=0:rnum='1';
+	break;
+	default:rnum='2';
+
+}
+return rnum;
+}
